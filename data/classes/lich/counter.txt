@@ -1,0 +1,835 @@
+###############################################################################
+# DRUID KINSHIP TALENT TREE
+# Beast mastery and companion bonding
+###############################################################################
+
+talent_tree lich_counter:
+{
+	string: "counter"
+	description: "Oof owie my counters."
+	icon: icon_fighter_protection
+	
+	map_palette:
+	{
+		talent lich_counter_regeneration: "A"
+		talent lich_counter_cauterization: "B"
+		talent lich_counter_improved_blood_crush: "C"
+		talent lich_counter_improved_kickstart: "D"
+		talent lich_counter_shield_specialization: "E"
+		talent lich_counter_counterspellkick: "F"
+		talent lich_counter_blood_guard: "G"
+		talent lich_counter_summon_bloodrift: "H"
+		talent lich_counter_improved_blursing: "I"
+		talent lich_counter_blood_armor: "J"
+		sprite talent_tree_down_arrow: "d"
+		sprite talent_tree_down: "|"
+		sprite talent_tree_right_arrow: "-"
+	}
+
+	map:
+	[
+		"D.A.C"
+		"d...d"
+		"I.E.F"
+		"..|.."
+		"B.|.J"
+		"..d.."
+		"..G.."
+		"....."
+		"..H.."
+	]
+}
+
+###############################################################################
+# BASELINE ABILITIES (granted by class, not talents)
+###############################################################################
+
+###############################################################################
+
+###############################################################################
+# Blood Crush
+
+cooldown blood_crush:
+{
+	duration: 150
+}
+
+particle_system blood_crush:
+{
+	particle:
+	{
+		sprites: [ effect_melee_swing_0 effect_melee_swing_1 effect_melee_swing_2 effect_melee_swing_3 effect_melee_swing_4 ]
+		flags: [ attached face_target no_loop blend_add ]
+		sprite_interval: 33
+		duration: 165
+		count: 1	
+		alpha: 0.5
+		color_mod: [ 255 160 0 ]
+	}
+}
+
+ability blood_crush:
+{
+	string: "Blood Crush"
+	description: "Interrupts spell casting at melee range after a short delay."
+	range: 1	
+	cooldowns: [ global blood_crush ]
+	cast_time: 5
+	flags: [ melee offensive target_other target_hostile can_be_dodged can_be_parried can_be_blocked can_miss ]
+	states: [ default in_combat ]
+	icon: icon_crush
+	delay: 3
+	resource_cost health: 20
+	talent_tree: lich_counter
+	melee_particle_system: blood_crush
+	
+	direct_effect interrupt:
+	{	
+		lockout_ticks: 40
+	}
+}
+
+######
+# Improved Blood Crush
+
+
+
+talent lich_counter_improved_blood_crush:{
+	string: "Improved Blood Crush"
+	icon: icon_crush
+	points:
+	[
+		{ ability_modifier: lich_counter_improved_blood_crush_1 }
+		{ ability_modifier: lich_counter_improved_blood_crush_2 }
+		{ ability_modifier: lich_counter_improved_blood_crush_3 }
+		{ ability_modifier: lich_counter_improved_blood_crush_4 }
+		{ ability_modifier: lich_counter_improved_blood_crush_5 }
+	]
+
+}
+
+ability_modifier lich_counter_improved_blood_crush_1:
+{
+	description: "Reduces the cooldown of Blood Crush by 1s."
+	modify_cooldown: -10
+	ability: blood_crush 
+}
+
+ability_modifier lich_counter_improved_blood_crush_2:
+{
+	description: "Reduces the cooldown of Blood Crush by 2s."
+	modify_cooldown: -20
+	ability: blood_crush 
+}
+ability_modifier lich_counter_improved_blood_crush_3:
+{
+	description: "Reduces the cooldown of Blood Crush by 3s."
+	modify_cooldown: -30
+	ability: blood_crush
+}
+ability_modifier lich_counter_improved_blood_crush_4:
+{
+	description: "Reduces the cooldown of Blood Crush by 4s."
+	modify_cooldown: -40
+	ability: blood_crush 
+}
+ability_modifier lich_counter_improved_blood_crush_5:
+{
+	description: "Reduces the cooldown of Blood Crush by 5s."
+	modify_cooldown: -50
+	ability: blood_crush 
+}
+
+
+###############################################################################
+# Shield Specialization
+
+talent lich_counter_shield_specialization:
+{
+	string: "Shield Specialization"
+	icon: icon_block
+	prerequisites: [ ]	
+	talent_tree_points_required: 5
+	points:
+	[
+		{ aura: lich_counter_shield_specialization_1 }
+		{ aura: lich_counter_shield_specialization_2 }
+		{ aura: lich_counter_shield_specialization_3 }
+		{ aura: lich_counter_shield_specialization_4 }
+		{ aura: lich_counter_shield_specialization_5 }
+	]
+}
+
+aura lich_counter_shield_specialization_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to block by 2%. Increases amount blocked by 12%."
+	stat_modifiers: { block_chance: { add: 2 } block_value: { add_percent: 12 } }
+}
+
+aura lich_counter_shield_specialization_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to block by 4%. Increases amount blocked by 24%."
+	stat_modifiers: { block_chance: { add: 4 } block_value: { add_percent: 24 } }
+}
+
+aura lich_counter_shield_specialization_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to block by 6%. Increases amount blocked by 36%."
+	stat_modifiers: { block_chance: { add: 6 } block_value: { add_percent: 36 } }
+}
+
+aura lich_counter_shield_specialization_4:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to block by 8%. Increases amount blocked by 48%."
+	stat_modifiers: { block_chance: { add: 8 } block_value: { add_percent: 48 } }
+}
+
+aura lich_counter_shield_specialization_5:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to block by 10%. Increases amount blocked by 60%."
+	stat_modifiers: { block_chance: { add: 10 } block_value: { add_percent: 60 } }
+}
+
+
+aura counterspellkick:
+{
+	flags: [ persist_in_death ]	
+	type: hidden
+	aura_effect combat_event_trigger: 
+	{ 
+		combat_event_ability_mask: [ melee ]
+		combat_event<source>: [ dodge parry ]
+		ability<target>: $ability
+		{
+			flags: [ always_in_range always_in_line_of_sight target_hostile target_other ]
+			states: [ default in_combat ]
+			icon: icon_kick_2
+			delay: 2				
+			direct_effect apply_aura:
+			{
+				aura: $aura @counterspellkick_trigger
+				{
+					string: "Exposed"
+					description: "Dodged or parried one of your attacks."
+					icon: icon_kick_2
+					flags: [ ]
+					type: debuff
+					duration: 40
+				}
+			}		
+		}
+	}
+}
+
+talent lich_counter_counterspellkick:
+{
+	string: "Counterspellkick"
+	icon: icon_block
+	prerequisites: [ lich_counter_improved_blood_crush ]	
+	talent_tree_points_required: 5
+	points:
+	[
+		{ ability: counterspellkick }
+	]
+}
+cooldown counterspellkick:
+{
+	duration: 80
+}
+ability counterspellkick:
+{
+	string: "Counterspellkick"
+	description: "Kicks and stuns target. Can only be used after an enemy dodges or parries one of your attacks. Can't be dodged or parried."
+	range: 1	
+	flags: [ melee offensive target_other target_hostile can_miss ]
+	states: [ default in_combat ]
+	cooldowns: [ counterspellkick ]
+	icon: icon_kick_2
+	delay: 2
+	resource_cost health: 100
+	talent_tree: lich_counter
+	melee_particle_system: dragon_crush
+	
+	requirement target<must_have_aura>: counterspellkick_trigger	
+	
+	direct_effect interrupt:
+	{	
+		lockout_ticks: 40
+	}	
+	direct_effect apply_aura:
+	{	
+		aura: spellkicked
+		threat: 20
+	}
+	direct_effect remove_aura:
+	{
+		aura: counterspellkick_trigger
+	}
+}
+
+aura spellkicked:
+{
+	string: "Spellkicked"
+	description: "Stunned."
+	icon: icon_stun		
+	type: debuff
+	duration: 5	
+	flags: [ unique incapacitation ]
+	aura_effect stun: { }
+	particle_system: judgement
+	priority: !AURA_PRIORITY_CC{}	
+	diminishing_effect: stun
+}
+
+###############################################################################
+# blursing
+
+ability blursing_tick:
+{
+	string: "blursing"
+	tags: [ ability_heal_over_time ]
+	icon: icon_holy_blessing		
+	states: [ default in_combat ]
+	flags: [ always_in_range always_in_line_of_sight ]
+	target_particle_system: small_heal	
+	delay: 2
+	sound_effects: !SOUND_HEAL_SMALL{}
+	
+	direct_effect heal:
+	{	
+		function: { expression: a_mul_x x: health_max a: 0.06 }
+		direct: false
+	}	
+}
+
+aura blursing:
+{
+	string: "blursing"
+	description: "Heals over time."
+	icon: icon_holy_blessing		
+	type: buff	
+	duration: based_on_effects	
+	flags: [ unique_per_source magic ]
+	priority: !AURA_PRIORITY_HEAL{}
+	aura_effect repeat: 
+	{ 
+		update_interval: 5
+		update_count: 10
+		ability: blursing_tick
+	}
+}
+
+ability blursing:
+{
+	string: "blursing"
+	description: "Heals target over 10 seconds."
+	range: 6
+	cooldowns: [ global spell_healing_lockout ]
+	flags: [ spell target_self ]
+	states: [ default in_combat ]
+	icon: icon_holy_blessing
+	talent_tree: lich_counter
+	direct_effect damage:
+	{	
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.4 }					
+	}	
+
+	direct_effect apply_aura:
+	{	
+		aura: blursing
+	}
+}
+
+###############################################################################
+# kickstart
+
+cooldown kickstart:
+{
+	duration: 100
+}
+
+ability kickstart_tick:
+{
+	string: "kickstart"
+	tags: [ ability_heal_over_time ]
+	icon: icon_greater_heal		
+	states: [ default in_combat ]
+	flags: [ always_in_range always_in_line_of_sight ]
+	target_particle_system: small_heal	
+	delay: 2
+	sound_effects: !SOUND_HEAL_SMALL{}
+	
+	direct_effect heal:
+	{	
+		function: { expression: a_mul_x x: health_max a: 0.04 }
+		direct: false
+	}	
+}
+
+aura kickstart:
+{
+	string: "kickstart"
+	description: "Heals over time."
+	icon: icon_greater_heal		
+	type: buff	
+	duration: based_on_effects	
+	flags: [ unique_per_source magic ]
+	priority: !AURA_PRIORITY_HEAL{}
+	aura_effect repeat: 
+	{ 
+		update_interval: 5
+		update_count: 10
+		ability: kickstart_tick
+	}
+}
+
+ability kickstart:
+{
+	string: "kickstart"
+	description: "Heals target over time"
+	range: 6
+	cooldowns: [ global spell_healing_lockout kickstart ]
+	flags: [ spell target_self ]
+	states: [ default in_combat ]
+	icon: icon_greater_heal
+	talent_tree: lich_counter
+	cast_time: 50
+	direct_effect apply_aura:
+	{	
+		aura: kickstart
+	}
+}
+
+###############################################################################
+# Improved kickstart
+
+talent lich_counter_improved_kickstart:
+{
+	string: "Improved kickstart"
+	icon: icon_greater_heal
+	points:
+	[
+		{ ability_modifier: improved_kickstart_1 }
+		{ ability_modifier: improved_kickstart_2 }
+	]
+}
+
+ability_modifier improved_kickstart_1:
+{	
+	description: "Increases duration of kickstart heal by 0.5 seconds."
+	ability: kickstart
+	modify_aura_update_count: 1
+}
+ability_modifier improved_kickstart_2:
+{	
+	description: "Increases duration of kickstart heal by 1 seconds."
+	ability: kickstart
+	modify_aura_update_count: 2
+}
+
+###############################################################################
+# Improved blursing
+
+talent lich_counter_improved_blursing:
+{
+	string: "Improved blursing"
+	icon: icon_holy_blessing
+	points:
+	[
+		{ ability_modifier: improved_blursing_1 }
+		{ ability_modifier: improved_blursing_2 }
+		{ ability_modifier: improved_blursing_3 }
+	]
+}
+
+ability_modifier improved_blursing_1:
+{	
+	description: "Increases duration of blursing heal by 0.5 seconds."
+	ability: blursing
+	modify_aura_update_count: 1
+}
+ability_modifier improved_blursing_2:
+{	
+	description: "Increases duration of blursing heal by 1 seconds."
+	ability: blursing
+	modify_aura_update_count: 2
+}
+ability_modifier improved_blursing_3:
+{	
+	description: "Increases duration of blursing heal by 1.5 seconds."
+	ability: blursing
+	modify_aura_update_count: 3
+}
+
+###############################################################################
+# Regeneration
+
+talent lich_counter_regeneration:
+{
+	string: "Regeneration"
+	icon: icon_crit
+	talent_tree_points_required: 0
+	points:
+	[
+		{ ability: lich_counter_regeneration }
+	]
+}
+
+ability lich_counter_regeneration:
+{
+	string: "regeneration"
+	description: "Heals target over time"
+	range: 6
+	cooldowns: [ global ]
+	flags: [ spell target_other target_self target_friendly ]
+	states: [ default in_combat ]
+	icon: icon_heal
+	talent_tree: lich_counter
+	direct_effect apply_aura:
+	{	
+		aura: lich_counter_regeneration
+	}
+}
+
+aura lich_counter_regeneration:
+{
+	string: "regeneration"
+	flags: [ unique_per_source magic ]
+	type: buff	
+	description: "Regenerates health by attack power per 5 seconds."
+	icon: icon_heal		
+	type: buff	
+	duration: based_on_effects	
+	flags: [ unique_per_source magic ]
+	priority: !AURA_PRIORITY_HEAL{}
+	aura_effect repeat:
+	{
+		update_interval: 50
+		update_count: 360
+		ability: regeneration_tick
+	}
+}
+
+ability regeneration_tick:
+{
+	string: "regeneration"
+	tags: [ ability_heal_over_time ]
+	icon: icon_heal		
+	states: [ default in_combat ]
+	flags: [ always_in_range always_in_line_of_sight ]
+	delay: 2
+	
+	direct_effect heal:
+	{	
+		function: { expression: a_mul_x x: attack_power a: 0.1 }
+		direct: false
+	}	
+}
+
+###############################################################################
+# Rejuvenation
+
+ability rejuvenation:
+{
+	string: "Rejuvenation"
+	description: "Restores 100% of your health after 2 seconds."
+	cooldowns: [ global spell_healing_lockout ]
+	cooldown: $cooldown { duration: 2400 }
+	flags: [ spell target_self ]
+	states: [ default in_combat ]
+	icon: icon_special_11
+	talent_tree: lich_counter
+	target_particle_system: heal	
+	delay: 2
+	cast_time: 20
+	sound_effects: !SOUND_HEAL{}	
+
+	direct_effect heal:
+	{	
+		function: { expression: a_mul_x x: health_max a: 1 }
+	}	
+	
+}
+
+###############################################################################
+# clotting
+
+cooldown clotting:
+{
+	duration: 300
+}
+
+aura clotting:
+{
+	string: "clotting"
+	flags: [ unique ]
+	duration: 100
+	type: buff
+	stat_modifiers: { block_chance: { add: 30 } }
+	icon: icon_defend
+}
+
+ability clotting:
+{
+	string: "clotting"
+	description: "Increases your chance to block by 30% for 10 seconds after paying a 10% health penalty."
+	cooldowns: [ global clotting ]
+	flags: [ spell target_self ]
+	states: [ default in_combat ]
+	icon: icon_defend
+	delay: 3
+	talent_tree: lich_counter
+	cast_time: 5
+	requirement self<must_have_item_type_equipped>: shield
+	direct_effect damage:
+	{	
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.10 }					
+	}	
+	direct_effect apply_aura:
+	{
+		aura: clotting
+	}
+}
+
+###############################################################################
+# Blood Guard
+
+talent lich_counter_blood_guard:{
+
+	string: "Blood Guard"
+	icon: icon_parry
+	talent_tree_points_required: 15
+	points:
+	[
+		{ ability: blood_guard }
+	]
+
+}
+
+cooldown blood_guard:
+{
+	duration: 600
+}
+
+aura blood_guard:
+{
+	string: "Blood Guard"
+	flags: [ unique ]
+	duration: 60
+	type: buff
+	stat_modifiers: { parry_chance: { add: 80 } }
+	icon: icon_parry
+}
+
+ability blood_guard:
+{
+	string: "blood_guard"
+	description: "Increases your chance to parry by 80% for 6 seconds after paying a 5% health penalty."
+	cooldowns: [ global blood_guard ]
+	flags: [ spell target_self ]
+	states: [ default in_combat ]
+	icon: icon_parry
+	delay: 3
+	talent_tree: lich_counter
+	direct_effect damage:
+	{	
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.05 }					
+	}	
+	direct_effect apply_aura:
+	{
+		aura: blood_guard
+	}
+}
+
+###############################################################################
+# isolation
+
+
+ability isolation:
+{
+	string: "isolation"
+	description: "Forces all nearby enemies in a large radius to attack you for 5 seconds. Applies Enragged."
+	range: 1	
+	cooldowns: [ global ]
+	cooldown: $cooldown { duration: 300 }
+	flags: [ target_self target_aoe target_aoe_hostile ]
+	states: [ default in_combat ]
+	icon: icon_provocation
+	delay: 3
+	aoe_radius: 10
+	aoe_cap: 15
+	aoe_requirement target<must_not_be_in_state>: { id: dead }
+	talent_tree: lich_counter
+	
+	direct_effect threat:
+	{	
+		apply_to: source
+		add: top
+	}
+	
+	direct_effect apply_aura:
+	{
+		aura: taunt
+	}
+	direct_effect apply_aura:
+	{
+		aura: enragged
+	}	
+}
+
+###############################################################################
+# cauterization
+
+talent lich_counter_cauterization:
+{
+	string: "cauterization"
+	icon: icon_sanctified_might
+	talent_tree_points_required: 0
+	points:
+	[
+		{ aura: lich_counter_cauterization_1 }
+		{ aura: lich_counter_cauterization_2 }
+		{ aura: lich_counter_cauterization_3 }
+		{ aura: lich_counter_cauterization_4 }
+		{ aura: lich_counter_cauterization_5 }
+	]
+}
+
+aura lich_counter_cauterization_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your Constitution by 18% of your Spirit."
+	stat_conversion: { from: spirit to: constitution factor: 0.18 }
+}
+
+aura lich_counter_cauterization_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your Constitution by 36% of your Spirit."
+	stat_conversion: { from: spirit to: constitution factor: 0.36 }	
+}
+
+aura lich_counter_cauterization_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your Constitution by 54% of your Spirit."
+	stat_conversion: { from: spirit to: constitution factor: 0.54 }
+}
+
+aura lich_counter_cauterization_4:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your Constitution by 72% of your Spirit."
+	stat_conversion: { from: spirit to: constitution factor: 0.72 }
+}
+
+aura lich_counter_cauterization_5:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your Constitution by 90% of your Spirit."
+	stat_conversion: { from: spirit to: constitution factor: 0.9 }
+}
+
+###############################################################################
+# Toughness
+
+talent lich_counter_blood_armor:
+{
+	string: "Toughness"
+	icon: icon_toughness
+	talent_tree_points_required: 10
+	points:
+	[
+		{ aura: lich_counter_blood_armor_1 }
+		{ aura: lich_counter_blood_armor_2 }
+	]
+}
+
+aura lich_counter_blood_armor_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your armor by 12%."
+	stat_modifiers: { armor: { add_percent: 12 } }
+}
+
+aura lich_counter_blood_armor_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your armor by 24%."
+	stat_modifiers: { armor: { add_percent: 24 } }
+}
+
+###############################################################################
+# Summon bloodrift
+
+talent lich_counter_summon_bloodrift:
+{
+	string: "Summon bloodrift"
+	icon: icon_summon_black_beast
+	talent_tree_points_required: 20
+	
+	points:
+	[
+		{ ability: summon_bloodrift }
+	]	
+}
+
+cooldown summon_bloodrift:
+{
+	duration: 1200
+}
+
+ability summon_bloodrift:
+{
+	string: "Summon bloodrift"
+	description: "Sacrifice half hp to summon a bloodrift which aggresses."
+	flags: [ target_self minion_summon class_minion_summon ]
+	cast_time: 20
+	icon: icon_summon_black_beast
+	talent_tree: lich_counter
+	cooldowns: [ global summon_bloodrift ]	
+	direct_effect damage:
+	{	
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.50 }					
+	}	
+	direct_effect spawn_entity:
+	{
+
+		spawn_flags: [ no_owner source_level ]
+		entity: bloodrift
+		init_state: spawning
+		
+		refresh_npc_metrics:
+		{
+			weapon_damage: 1.3
+			health: 1.3
+			armor: 1.3
+		}			
+	}
+	
+}

@@ -1,0 +1,591 @@
+
+talent_tree lich_movement:
+{
+	string: "Movement"
+	description: "Oof owie my muscles."
+	icon: icon_blink
+	
+	map_palette:
+	{
+		talent lich_movement_agility: "A"
+		talent lich_movement_rapid_bloodblink: "B"
+		talent lich_movement_reduced_bloodblink_sacrifice: "Z"
+		talent lich_movement_dodge: "Y"
+		talent lich_movement_surge: "C"
+		talent lich_movement_rapid_surge: "D"
+		talent lich_movement_increased_surge: "E"
+		talent lich_movement_hyper_surge: "F"
+		talent lich_movement_phantome: "G"
+		talent lich_movement_reduced_surge_sacrifice: "H"
+		sprite talent_tree_down_arrow: "d"
+		sprite talent_tree_down: "|"
+		sprite talent_tree_right_arrow: "-"
+		sprite talent_tree_right_arrow: "l"
+	}
+
+	map:
+	[
+		"B.Z...A"
+		"......."
+		"ElC-D.Y"
+		"..|.d.."
+		"..|.H.."
+		"..|...."
+		"..|...G"
+		"..d...."
+		"..F...."
+	]
+}
+
+###############################################################################
+# BASELINE ABILITIES (granted by class, not talents)
+###############################################################################
+
+###############################################################################
+###############################################################################
+# bloodblink
+
+cooldown bloodblink:{
+	duration: 80
+}
+
+ability bloodblink:
+{
+	string: "bloodblink"
+	description: "Teleports you to a random nearby location at health cost"	
+	cooldowns: [ global bloodblink ]	
+	flags: [ spell target_self ]
+	states: [ default in_combat ]
+	icon: icon_blink
+	talent_tree: lich_movement
+	source_particle_system: teleport
+
+	direct_effect move:
+	{
+		destination: target_nearby_random
+		move_flags: [ walkable_path_required ] 
+		max_steps: 6
+		min_steps: 3
+	}
+	direct_effect damage:
+	{	
+		must_not_have_ability_modifiers: [ lich_movement_reduced_bloodblink_sacrifice ] 
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.15 }					
+	}
+	
+	direct_effect damage:
+	{	
+		must_have_ability_modifier: lich_movement_reduced_bloodblink_sacrifice
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.1 }					
+	}		
+}
+
+#######
+# Rapid bloodblink
+
+talent lich_movement_rapid_bloodblink:{
+	string: "Rapid bloodblink"
+	icon: icon_blink
+	points:
+	[
+		{ ability_modifier: lich_movement_rapid_bloodblink_1 }
+		{ ability_modifier: lich_movement_rapid_bloodblink_2 }
+	]
+
+}
+
+ability_modifier lich_movement_rapid_bloodblink_1:
+{
+	description: "Reduces the cooldown of bloodblink by 1s."
+	modify_cooldown: -10
+	ability: bloodblink 
+}
+
+ability_modifier lich_movement_rapid_bloodblink_2:
+{
+	description: "Reduces the casting time of bloodblink by 2s."
+	modify_cooldown: -20
+	ability:  bloodblink 
+}
+
+###############################################################################
+# reduced_bloodblink_sacrifice
+
+talent lich_movement_reduced_bloodblink_sacrifice:
+{
+	string: "reduced_bloodblink_sacrifice"
+	icon: icon_blood_pact
+	talent_tree_points_required: 0
+	
+	points:
+	[
+		{ ability_modifier: lich_movement_reduced_bloodblink_sacrifice }
+	]		
+}
+
+ability_modifier lich_movement_reduced_bloodblink_sacrifice:
+{	
+	description: "Reduces blood cost of Bloodblink by 5%."	
+}
+
+###############################################################################
+# reduced_surge_sacrifice
+
+talent lich_movement_reduced_surge_sacrifice:
+{
+	string: "reduced_surge_sacrifice"
+	icon: icon_pony
+	prerequisites: [ lich_movement_rapid_surge ]
+	talent_tree_points_required: 10
+	
+	points:
+	[
+		{ ability_modifier: lich_movement_reduced_surge_sacrifice }
+	]		
+}
+
+ability_modifier lich_movement_reduced_surge_sacrifice:
+{	
+	description: "Reduces blood cost of surge by 5%."	
+}
+
+###############################################################################
+# Agility
+
+talent lich_movement_agility:
+{
+	string: "Agility"
+	icon: icon_agility
+	prerequisites: [ ]	
+	talent_tree_points_required: 0
+	points:
+	[
+		{ aura: lich_movement_agility_1 }
+		{ aura: lich_movement_agility_2 }
+		{ aura: lich_movement_agility_3 }
+		{ aura: lich_movement_agility_4 }
+		{ aura: lich_movement_agility_5 }
+	]
+}
+
+aura lich_movement_agility_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your dexterity by 2%."
+	stat_modifiers: { dexterity: { add_percent: 2 } }
+}
+
+aura lich_movement_agility_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your dexterity by 4%."
+	stat_modifiers: { dexterity: { add_percent: 4 } }
+}
+
+aura lich_movement_agility_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your dexterity by 6%."
+	stat_modifiers: { dexterity: { add_percent: 6 } }
+}
+
+aura lich_movement_agility_4:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your dexterity by 8%."
+	stat_modifiers: { dexterity: { add_percent: 8 } }
+}
+
+aura lich_movement_agility_5:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your dexterity by 10%."
+	stat_modifiers: { dexterity: { add_percent: 10 } }
+}
+
+###############################################################################
+# Improved Dodge
+
+talent lich_movement_dodge:
+{
+	string: "Improved Dodge"
+	icon: icon_dodge
+	prerequisites: [ ]	
+	talent_tree_points_required: 5
+	points:
+	[
+		{ aura: lich_movement_dodge_1 }
+		{ aura: lich_movement_dodge_2 }
+		{ aura: lich_movement_dodge_3 }
+		{ aura: lich_movement_dodge_4 }
+		{ aura: lich_movement_dodge_5 }
+	]
+}
+
+aura lich_movement_dodge_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to dodge by 2%."
+	stat_modifiers: { dodge_chance: { add: 2 } }
+}
+
+aura lich_movement_dodge_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to dodge by 4%."
+	stat_modifiers: { dodge_chance: { add: 4 } }
+}
+
+aura lich_movement_dodge_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to dodge by 6%."
+	stat_modifiers: { dodge_chance: { add: 6 } }
+}
+
+aura lich_movement_dodge_4:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to dodge by 8%."
+	stat_modifiers: { dodge_chance: { add: 8 } }
+}
+
+aura lich_movement_dodge_5:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your chance to dodge by 10%."
+	stat_modifiers: { dodge_chance: { add: 10 } }
+}
+
+###############################################################################
+# Surge
+
+cooldown surge:
+{
+	duration: 200
+}
+
+talent lich_movement_surge:{
+	string: "Surge"
+	icon: icon_mage_swiftness
+	talent_tree_points_required: 5
+	points:
+	[
+		{ ability: surge }
+	]
+}
+
+aura surge_basic:
+{	
+	string: "Surge"
+	description: "Movement speed increased."
+	type: buff
+	duration: 40
+	flags: [ unique magic ]	
+	icon: icon_mage_swiftness
+	aura_effect move_speed_modifier:
+	{
+		move_speed: fast
+	}
+}
+
+aura surge_increase:
+{	
+	string: "Surge"
+	description: "Movement speed increased."
+	type: buff
+	duration: 60
+	flags: [ unique magic ]	
+	icon: icon_mage_swiftness
+	aura_effect move_speed_modifier:
+	{
+		move_speed: fast
+	}
+}
+
+aura surge_hyper:
+{	
+	string: "Hyper Surge"
+	description: "Movement speed increased to mount speed."
+	type: buff
+	duration: 60
+	flags: [ unique magic ]	
+	icon: icon_mage_swiftness
+	aura_effect move_speed_modifier:
+	{
+		move_speed: very_fast
+	}
+}
+
+ability surge:
+{
+	string: "Surge"
+	description: "Move fast"
+	cooldowns: [ surge ]
+	flags: [ target_self ]
+	states: [ default in_combat ]	
+	icon: icon_mage_swiftness
+	talent_tree: lich_movement	
+	
+	direct_effect damage:
+	{	
+		# must_not_have_ability_modifiers: [ lich_movement_reduced_surge_sacrifice ] 
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.25 }					
+	}
+
+	direct_effect damage:
+	{	
+		must_have_ability_modifier: lich_movement_reduced_surge_sacrifice 
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.20 }					
+	}
+	
+	direct_effect apply_aura:
+	{	
+		must_not_have_ability_modifiers: [lich_movement_increased_surge lich_movement_hyper_surge]
+		aura: surge_basic
+	}
+
+	direct_effect apply_aura:
+	{	
+		must_have_ability_modifier: lich_movement_increased_surge
+		must_not_have_ability_modifiers: [ lich_movement_hyper_surge ]
+		aura: surge_increase
+	}
+
+	direct_effect apply_aura:
+	{	
+		must_have_ability_modifier: lich_movement_hyper_surge
+		must_not_have_ability_modifiers: [ lich_movement_hyper_surge ]
+		aura: surge_hyper
+	}
+}
+#######
+# Rapid Surge
+
+talent lich_movement_rapid_surge:{
+	string: "Rapid surge"
+	icon: icon_swift_justice
+	prerequisites: [ lich_movement_surge ]
+	talent_tree_points_required: 5
+
+	points:
+	[
+		{ ability_modifier: lich_movement_rapid_surge_1 }
+		{ ability_modifier: lich_movement_rapid_surge_2 }
+		{ ability_modifier: lich_movement_rapid_surge_3 }
+		{ ability_modifier: lich_movement_rapid_surge_4 }
+		{ ability_modifier: lich_movement_rapid_surge_5 }
+	]
+
+}
+
+ability_modifier lich_movement_rapid_surge_1:
+{
+	description: "Reduces the cooldown of surge by 1s."
+	modify_cooldown: -10
+	ability: surge 
+}
+
+ability_modifier lich_movement_rapid_surge_2:
+{
+	description: "Reduces the casting time of surge by 2s."
+	modify_cooldown: -20
+	ability:  surge 
+}
+ability_modifier lich_movement_rapid_surge_3:
+{
+	description: "Reduces the casting time of surge by 3s."
+	modify_cooldown: -30
+	ability:  surge 
+}
+ability_modifier lich_movement_rapid_surge_4:
+{
+	description: "Reduces the casting time of surge by 4s."
+	modify_cooldown: -40
+	ability:  surge 
+}
+ability_modifier lich_movement_rapid_surge_5:
+{
+	description: "Reduces the casting time of surge by 5s."
+	modify_cooldown: -50
+	ability:  surge 
+}
+
+###
+# Increased Surge
+
+talent lich_movement_increased_surge:{
+	string: "Increased Surge"
+	icon: icon_swiftstrike
+	prerequisites: [ lich_movement_surge ]
+	talent_tree_points_required: 5
+
+	points:
+	[
+		{ ability_modifier: lich_movement_increased_surge }
+	]
+}
+
+ability_modifier lich_movement_increased_surge:
+{
+	description: "Increases duration of surge by 2s."
+}
+
+###
+# Hyper Surge # change pts
+
+talent lich_movement_hyper_surge:{
+	string: "Increased Surge"
+	icon: icon_vindicate
+	talent_tree_points_required: 15 # change
+	prerequisites: [lich_movement_surge ]
+	points:
+	[
+		{ ability_modifier: lich_movement_hyper_surge }
+	]
+}
+
+ability_modifier lich_movement_hyper_surge:
+{
+	description: "Surge movement speed increased greatly."
+}
+
+
+###############################################################################
+# Blood Teleport
+
+cooldown blood_teleport:
+{
+	duration: 40
+}
+
+talent lich_movement_blood_teleport:{
+	string: "Blood Teleport"
+	icon: icon_teleport
+	talent_tree_points_required: 10
+	points:
+	[
+		{ ability: blood_teleport }
+	]
+}
+
+ability blood_teleport:
+{
+	string: "Blood Teleport"
+	description: "Converts health to movement."
+	range: 8
+	cooldowns: [ global spell_unholy_lockout blood_teleport ]
+	flags: [ spell target_aoe target_aoe_always_self interruptable late_cooldown_trigger ]
+	states: [ default in_combat ]	
+	icon: icon_teleport
+	talent_tree: lich_movement	
+	target_particle_system: drain_life
+	aoe_cap: 1
+	aoe_radius: 0
+	delay: 3
+	sound_effects: !SOUND_PAIN{}
+	
+	direct_effect damage:
+	{	
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.3 }					
+	}	
+	
+	direct_effect move:
+	{			
+		destination: aoe_center
+		move_flags: [ set_teleported walkable_path_required ]
+		max_steps: 14
+	}		
+}
+##########################################################
+# phantome
+
+talent lich_movement_phantome:{
+	string: "Phantome"
+	icon: icon_charge
+	talent_tree_points_required: 15
+	points:
+	[
+		{ ability: phantome }
+	]
+}
+
+cooldown phantome:
+{
+	duration: 100
+}
+
+aura phantome_stun:
+{
+	string: "phantome"
+	description: "Stunned."
+	icon: icon_stun		
+	type: debuff
+	duration: 20	
+	flags: [ incapacitation ]
+	aura_effect stun: { }
+	particle_system: knock
+	priority: !AURA_PRIORITY_CC{}	
+	diminishing_effect: stun
+}
+
+ability phantome_trigger:
+{
+	string: "phantome"
+	flags: [ target_hostile ]
+	states: [ default in_combat ]
+	icon: icon_charge
+
+	direct_effect apply_aura:
+	{	
+		aura: phantome_stun
+	}
+	
+	direct_effect damage:
+	{
+		damage_type: unholy
+		flags: [ is_magical ]
+		function: { expression: a_mul_x_plus_b x: weapon_normalized a: 3 b: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }		
+	}
+}
+
+ability phantome:
+{
+	string: "phantome"
+	description: "teleport to target, attacking and stunning it for 2 seconds."
+	min_range: 2
+	range: 9
+	cooldowns: [ phantome ]
+	flags: [ offensive target_other target_hostile trigger_move_cooldown ]
+	states: [ default in_combat ]
+	icon: icon_charge
+	talent_tree: lich_movement
+	
+	direct_effect move:
+	{
+		destination: target_adjacent
+		move_flags: [ ]
+		max_steps: 10
+		trigger_ability_on_resolve<target>: phantome_trigger
+	}
+}

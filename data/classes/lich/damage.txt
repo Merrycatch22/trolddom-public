@@ -1,0 +1,793 @@
+###############################################################################
+# DRUID KINSHIP TALENT TREE
+# Beast mastery and companion bonding
+###############################################################################
+
+talent_tree lich_damage:
+{
+	string: "Damage"
+	description: "Oof owie my bones."
+	icon: icon_blood_pact
+	
+	map_palette:
+	{
+		talent lich_damage_longer_frenzying: "A"
+		talent lich_damage_improved_strength: "B"
+		talent lich_damage_improved_lifestrike: "C"
+		talent lich_damage_improved_bleeding: "D"
+		talent lich_damage_bloodshard: "E"
+		talent lich_damage_improved_bloodshard: "F"
+		talent lich_damage_faster_bloodcaster: "G"
+		talent lich_damage_rapid_berserk: "H"
+		talent lich_damage_execute: "I"
+		talent lich_damage_one_handed_weapon_mastery: "J"
+		sprite talent_tree_down_arrow: "d"
+		sprite talent_tree_down: "|"
+		sprite talent_tree_right_arrow: "-"
+	}
+
+	map:
+	[
+		".A...B."
+		".d....."
+		".D.E.C."
+		"...d..."
+		".J.F-G."
+		"......."
+		"...H..."
+		"......."
+		"...I..."
+	]
+}
+
+###############################################################################
+# BASELINE ABILITIES (granted by class, not talents)
+###############################################################################
+
+###############################################################################
+# lifestrike
+
+particle_system lifestrike:
+{
+	particle:
+	{
+		sprites: [ effect_melee_swing_0 effect_melee_swing_1 effect_melee_swing_2 effect_melee_swing_3 effect_melee_swing_4 ]
+		flags: [ attached face_target no_loop blend_add ]
+		sprite_interval: 33
+		duration: 165
+		count: 1	
+		alpha: 0.4
+		color_mod: [ 255 255 214 ]
+	}
+}
+
+ability lifestrike:
+{
+	string: "Lifestrike"
+	description: "A powerful attack that inflicts $damage$ damage on target."
+	range: 1	
+	cooldowns: [ global ]
+	flags: [ melee offensive target_other target_hostile can_be_dodged can_be_parried can_be_blocked can_miss ]
+	states: [ default in_combat ]
+	icon: icon_strike
+	delay: 3
+	talent_tree: lich_damage
+	melee_particle_system: lifestrike
+	
+	direct_effect damage:
+	{
+		flags: [ can_be_critical leech]
+		damage_type: physical
+		function: { expression: x_plus_a x: weapon_normalized a: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }
+	}
+}
+
+
+###############################################################################
+# frenzying
+
+ability frenzying_tick:
+{
+	string: "frenzying"
+	icon: icon_rend		
+	states: [ default in_combat ]
+	flags: [ always_in_range always_in_line_of_sight ]
+	
+	direct_effect damage:
+	{
+		damage_type: bleed
+		function: { expression: a_mul_x_plus_b x: attack_power a: 0.085 b: [ [ 1 5 ] [ 10 11 ] [ 20 22 ] [ 20 36 ] ] }	
+		direct: false		
+	}
+}
+
+aura frenzying:
+{
+	string: "frenzying"
+	description: "Bleeding."
+	type: debuff
+	icon: icon_rend
+	duration: based_on_effects
+	flags: [ unique_per_source ]
+	
+	aura_effect repeat: 
+	{ 
+		update_interval: 10
+		update_count: 6
+		ability: frenzying_tick
+	}
+	
+}
+aura enragged:
+{
+	string: "Enragged"
+	description: "Angery."
+	type: buff
+	icon: icon_chill_touch
+	duration: 60
+	flags: [ unique_per_source ]
+	stat_modifiers:
+	{
+		attack_haste: { add: 50 } 
+	}	
+}
+ability frenzying:
+{
+	string: "frenzying"
+	description: "Wounds the target, dealing damage over time."
+	range: 1
+	cooldowns: [ global ]
+	flags: [ melee offensive target_other target_hostile can_be_dodged can_be_parried can_be_blocked can_miss ]
+	states: [ default in_combat ]
+	icon: icon_rend
+	delay: 3
+	talent_tree: lich_damage
+
+	direct_effect apply_aura:
+	{
+		aura: enragged
+	}	
+	
+	direct_effect apply_aura:
+	{
+		aura: frenzying
+	}
+
+}
+
+##############################################################################
+# Berserk
+
+cooldown berserk:
+{
+	duration: 60
+}
+
+aura berserking:
+{
+	string: "berserk"
+	description: "All outgoing damage exponentially increased by 1.5."
+	type: buff
+	max_stack: 3
+	icon: icon_envenom
+	duration: 100
+	aura_effect damage_output_modifier: 
+	{ 
+		type_mask: [ all ]
+		multiplier: 1.5
+	}
+}
+
+aura berserked:
+{
+	string: "berserk"
+	description: "All incoming damage exponentially increased by 1.5."
+	type: buff
+	max_stack: 3
+	icon: icon_fortify
+	duration: 100
+	aura_effect damage_input_modifier: 
+	{ 
+		type_mask: [ all ]
+		multiplier: 1.5
+	}
+}
+
+ability berserk:
+{
+	string: "berserk"
+	description: "Increases all incoming and outgoing damage for 10 seconds." 
+	range: 1	
+	cooldowns: [ global berserk ]
+	flags: [ target_self ]
+	states: [ default in_combat ]
+	icon: icon_fortify
+	delay: 3
+	talent_tree: lich_damage
+	
+	direct_effect apply_aura:
+	{
+		aura: berserking
+	}	
+	
+	direct_effect apply_aura:
+	{
+		aura: berserked
+	}	
+}
+#######
+# Rapid Berserk
+
+# CHANGE tree points
+
+talent lich_damage_rapid_berserk:{
+	string: "Rapid Berserk"
+	icon: icon_unholy_empowerment
+	talent_tree_points_required: 15
+	points:
+	[
+		{ ability_modifier: lich_damage_rapid_berserk_1 }
+		{ ability_modifier: lich_damage_rapid_berserk_2 }
+	]
+
+}
+
+ability_modifier lich_damage_rapid_berserk_1:
+{
+	description: "Reduces the cooldown of Berserk by 2s."
+	modify_cooldown: -20
+	ability: berserk 
+}
+
+ability_modifier lich_damage_rapid_berserk_2:
+{
+	description: "Reduces the casting time of Berserk by 4s."
+	modify_cooldown: -40
+	ability:  berserk 
+}
+
+
+
+###############################################################################
+# Improved Strength
+
+talent lich_damage_improved_strength:
+{
+	string: "Improved Strength"
+	icon: icon_strength	
+	points:
+	[
+		{ aura: lich_damage_improved_strength_1 }
+		{ aura: lich_damage_improved_strength_2 }
+		{ aura: lich_damage_improved_strength_3 }
+		{ aura: lich_damage_improved_strength_4 }
+		{ aura: lich_damage_improved_strength_5 }
+	]
+}
+
+aura lich_damage_improved_strength_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your strength by 2%."
+	stat_modifiers: { strength: { add_percent: 2 } }
+}
+
+aura lich_damage_improved_strength_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your strength by 4%."
+	stat_modifiers: { strength: { add_percent: 4 } }
+}
+
+aura lich_damage_improved_strength_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your strength by 6%."
+	stat_modifiers: { strength: { add_percent: 6 } }
+}
+
+aura lich_damage_improved_strength_4:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your strength by 8%."
+	stat_modifiers: { strength: { add_percent: 8 } }
+}
+
+aura lich_damage_improved_strength_5:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your strength by 10%."
+	stat_modifiers: { strength: { add_percent: 10 } }
+}
+
+###############################################################################
+# Improved frenzying
+
+talent lich_damage_longer_frenzying:
+{
+	string: "Improved frenzying"
+	icon: icon_rend
+	points:
+	[
+		{ ability_modifier: longer_frenzying_1 }
+		{ ability_modifier: longer_frenzying_2 }
+		{ ability_modifier: longer_frenzying_3 }
+	]
+}
+
+ability_modifier longer_frenzying_1:
+{	
+	description: "Increases duration of frenzying by 1 second."
+	ability: frenzying
+	modify_aura_update_count: 1
+}
+
+ability_modifier longer_frenzying_2:
+{
+	description: "Increases duration of frenzying by 2 seconds."
+	ability: frenzying
+	modify_aura_update_count: 2
+}
+
+ability_modifier longer_frenzying_3:
+{
+	description: "Increases duration of frenzying by 3 seconds."
+	ability: frenzying
+	modify_aura_update_count: 3
+}
+
+############# 
+# execute
+
+talent lich_damage_execute:{
+	string: "Execute"
+	icon: icon_mortal_strike
+	talent_tree_points_required: 20
+	points:
+	[
+		{ ability: execute }
+	]
+}
+
+cooldown execute:
+{
+	duration: 100
+}
+
+ability execute:
+{
+	string: "execute"
+	description: "A killing blow that inflicts $damage$ damage on target."
+	range: 1	
+	cooldowns: [ global execute ]
+	flags: [ melee offensive target_other target_hostile can_be_dodged can_be_parried can_be_blocked can_miss ]
+	states: [ default in_combat ]
+	icon: icon_mortal_strike
+	delay: 3
+	talent_tree: lich_damage
+	resource_cost health: 100
+	
+	direct_effect damage:
+	{
+		flags: [ can_be_critical]
+		damage_type: physical
+		function: { expression: a_mul_x_plus_b x: weapon_normalized a: 5 b: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }
+	}
+}
+
+#####
+# bloodshard
+
+talent lich_damage_bloodshard:
+{
+	string: "Bloodshard"
+	icon: icon_arcane_missile
+	talent_tree_points_required: 5
+	points:
+	[
+		{ ability: bloodshard }
+	]
+}
+
+cooldown bloodshard:
+{
+	duration: 40
+	talent_tree: lich_damage
+}
+
+ability bloodshard:
+{
+	string: "Bloodshard"
+	description: "Deals $damage$ arcane damage to target. Grants enemy move haste."
+	range: 8
+	cooldowns: [ global bloodshard spell_arcane_lockout ]
+	flags: [ spell offensive target_other target_hostile can_miss ]
+	states: [ default in_combat ]
+	icon: icon_arcane_missile
+	talent_tree: lich_damage
+	speed: 9
+	cast_time: 9
+	projectile: bloodshard
+	resource_cost health: 50
+	
+	direct_effect damage:
+	{
+	
+		flags: [ can_be_critical is_magical ]
+		damage_type: arcane
+		function: { expression: a_mul_x_plus_b x: weapon_normalized a: 0.75 b: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }											
+		spread: !DEFAULT_SPREAD{}
+	}
+	direct_effect apply_aura:
+	{
+		aura: speedy
+	}
+}
+
+aura speedy:
+{
+	string: "Speedy"
+	description: "Speedy."
+	type: buff
+	icon: icon_mage_swiftness
+	duration: 60
+	flags: [ unique_per_source ]
+	aura_effect move_speed_modifier:
+	{
+		move_speed: fast
+	}	
+}
+
+particle_system bloodshard:
+{
+	particle:
+	{
+		sprites: [ effect_frostbolt ]
+		flags: [ attached no_rotation face_target ]
+		scale: 0.4
+		count: 1		
+		color_mod: [ 255 64 40 ]
+	}
+}
+
+##############
+# Improved Lifestrike
+
+
+talent lich_damage_improved_lifestrike:
+{
+	string: "Improved Lifestrike"
+	icon: icon_strike_2
+	talent_tree_points_required: 5
+	points:
+	[
+		{ aura: lich_damage_improved_lifestrike_1 }
+		{ aura: lich_damage_improved_lifestrike_2 }
+		{ aura: lich_damage_improved_lifestrike_3 }
+		{ aura: lich_damage_improved_lifestrike_4 }
+		{ aura: lich_damage_improved_lifestrike_5 }
+	]
+}
+
+aura lich_damage_improved_lifestrike_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your threat and damage from Lifestrike by 8%."
+	aura_effect damage_output_modifier:
+	{
+		multiplier: 1.08
+		type_mask: [ physical ]
+		apply_to_abilities: [ lifestrike ]
+	}
+	aura_effect threat_modifier:
+	{
+		multiplier: 1.08
+		apply_to_abilities: [ lifestrike ]
+	}
+}
+
+aura lich_damage_improved_lifestrike_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your threat and damage from Lifestrike by 16%."
+	aura_effect damage_output_modifier:
+	{
+		multiplier: 1.16
+		type_mask: [ physical ]
+		apply_to_abilities: [ lifestrike ]
+	}
+	aura_effect threat_modifier:
+	{
+		multiplier: 1.16
+		apply_to_abilities: [ lifestrike ]
+	}
+}
+
+aura lich_damage_improved_lifestrike_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your threat and damage from Lifestrike by 24%."
+	aura_effect damage_output_modifier:
+	{
+		multiplier: 1.24
+		type_mask: [ physical ]
+		apply_to_abilities: [ lifestrike ]
+	}
+	aura_effect threat_modifier:
+	{
+		multiplier: 1.24
+		apply_to_abilities: [ lifestrike ]
+	}
+}
+
+aura lich_damage_improved_lifestrike_4:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your threat and damage from Lifestrike by 32%."
+	aura_effect damage_output_modifier:
+	{
+		multiplier: 1.32
+		type_mask: [ physical ]
+		apply_to_abilities: [ lifestrike ]
+	}
+	aura_effect threat_modifier:
+	{
+		multiplier: 1.32
+		apply_to_abilities: [ lifestrike ]
+	}
+}
+
+aura lich_damage_improved_lifestrike_5:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your threat and damage from Lifestrike by 40%."
+	aura_effect damage_output_modifier:
+	{
+		multiplier: 1.40
+		type_mask: [ physical ]
+		apply_to_abilities: [ lifestrike ]
+	}
+	aura_effect threat_modifier:
+	{
+		multiplier: 1.40
+		apply_to_abilities: [ lifestrike ]
+	}
+}
+
+###############################################################################
+# improved_bleeding
+
+talent lich_damage_improved_bleeding:
+{
+	string: "improved_bleeding"
+	icon: icon_stuff
+	prerequisites: [ lich_damage_longer_frenzying ]
+	talent_tree_points_required: 5
+	points:
+	[
+		{ aura: lich_damage_improved_bleeding_1 }
+		{ aura: lich_damage_improved_bleeding_2 }
+		{ aura: lich_damage_improved_bleeding_3 }
+	]
+}
+
+aura lich_damage_improved_bleeding_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases damage done by your bleed effects by 10%."
+	aura_effect damage_output_modifier:
+	{
+		type_mask: [ bleed ]
+		multiplier: 1.1
+	}
+}
+
+aura lich_damage_improved_bleeding_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases damage done by your bleed effects by 20%."
+	aura_effect damage_output_modifier:
+	{
+		type_mask: [ bleed ]
+		multiplier: 1.2
+	}
+}
+
+aura lich_damage_improved_bleeding_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases damage done by your bleed effects by 30%."
+	aura_effect damage_output_modifier:
+	{
+		type_mask: [ bleed ]
+		multiplier: 1.3
+	}
+}
+
+# improved_bloodshard
+
+talent lich_damage_improved_bloodshard:
+{
+	string: "improved_bloodshard"
+	icon: icon_small_red_potion
+	prerequisites: [ lich_damage_bloodshard ]
+	talent_tree_points_required: 10
+	points:
+	[
+		{ aura: lich_damage_improved_bloodshard_1 }
+		{ aura: lich_damage_improved_bloodshard_2 }
+		{ aura: lich_damage_improved_bloodshard_3 }
+	]
+}
+
+aura lich_damage_improved_bloodshard_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases damage done by bloodshard by 10%."
+	aura_effect damage_output_modifier:
+	{
+		type_mask: [ arcane ]
+		multiplier: 1.1
+	}
+}
+
+aura lich_damage_improved_bloodshard_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases damage done by bloodshard by 20%."
+	aura_effect damage_output_modifier:
+	{
+		type_mask: [ arcane ]
+		multiplier: 1.2
+	}
+}
+
+aura lich_damage_improved_bloodshard_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases damage done by bloodshard by 30%."
+	aura_effect damage_output_modifier:
+	{
+		type_mask: [ arcane ]
+		multiplier: 1.3
+	}
+}
+
+###############################################################################
+# Faster Bloodcaster
+
+talent lich_damage_faster_bloodcaster:
+{
+	string: "Faster Bloodcaster"
+	icon: icon_worm_1
+	talent_tree_points_required: 10
+	prerequisites: [ lich_damage_improved_bloodshard ]
+	points:
+	[
+		{ ability_modifier: lich_damage_faster_bloodcaster_1 }
+		{ ability_modifier: lich_damage_faster_bloodcaster_2 }
+		{ ability_modifier: lich_damage_faster_bloodcaster_3 }
+	]
+}
+
+ability_modifier lich_damage_faster_bloodcaster_1:
+{
+	description: "Reduces the casting time of Bloodshard by 33%."
+	modify_cast_time: -3
+	abilities: [ bloodshard ]
+}
+
+ability_modifier lich_damage_faster_bloodcaster_2:
+{
+	description: "Reduces the casting time of Bloodshard by 67%."
+	modify_cast_time: -6
+	abilities: [ bloodshard ]
+}
+
+ability_modifier lich_damage_faster_bloodcaster_3:
+{
+	description: "Reduces the casting time of Bloodshard by 100%."
+	modify_aura_update_count: 2
+	modify_cast_time: -9
+	abilities: [ bloodshard ]
+}
+
+###############################################################################
+# One-Handed Weapon Mastery
+
+talent lich_damage_one_handed_weapon_mastery:
+{
+	string: "One-Handed Weapon Mastery"
+	icon: icon_one_handed_weapon_mastery
+	prerequisites: [ ]	
+	talent_tree_points_required: 10
+	points:
+	[
+		{ aura: lich_damage_one_handed_weapon_mastery_1 }
+		{ aura: lich_damage_one_handed_weapon_mastery_2 }
+		{ aura: lich_damage_one_handed_weapon_mastery_3 }
+		{ aura: lich_damage_one_handed_weapon_mastery_4 }
+		{ aura: lich_damage_one_handed_weapon_mastery_5 }
+	]
+}
+
+aura lich_damage_one_handed_weapon_mastery_1:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your damage done with one-handed weapons by 2%."
+	aura_effect damage_output_modifier:
+	{
+		requirement self<must_not_have_equipped_item_type_flags>: { id: [ two_handed ] }
+		multiplier: 1.02
+		type_mask: [ physical ]
+	}
+}
+
+aura lich_damage_one_handed_weapon_mastery_2:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your damage done with one-handed weapons by 4%."
+	aura_effect damage_output_modifier:
+	{
+		requirement self<must_not_have_equipped_item_type_flags>: { id: [ two_handed ] }
+		multiplier: 1.04
+		type_mask: [ physical ]
+	}
+}
+
+aura lich_damage_one_handed_weapon_mastery_3:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your damage done with one-handed weapons by 6%."
+	aura_effect damage_output_modifier:
+	{
+		requirement self<must_not_have_equipped_item_type_flags>: { id: [ two_handed ] }
+		multiplier: 1.06
+		type_mask: [ physical ]
+	}
+}
+
+aura lich_damage_one_handed_weapon_mastery_4:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your damage done with one-handed weapons by 8%."
+	aura_effect damage_output_modifier:
+	{
+		requirement self<must_not_have_equipped_item_type_flags>: { id: [ two_handed ] }
+		multiplier: 1.08
+		type_mask: [ physical ]
+	}
+}
+
+aura lich_damage_one_handed_weapon_mastery_5:
+{
+	flags: [ persist_in_death ]
+	type: hidden
+	description: "Increases your damage done with one-handed weapons by 10%."
+	aura_effect damage_output_modifier:
+	{
+		requirement self<must_not_have_equipped_item_type_flags>: { id: [ two_handed ] }
+		multiplier: 1.10
+		type_mask: [ physical ]
+	}
+}
