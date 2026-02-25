@@ -158,16 +158,16 @@ class lich:
 
 	level_progression:
 	[
-		{ level: 1 unlock_abilities: [ lich_attack lich_shoot lifestrike blursing frenzying kickstart bloodblink blood_crush blood_teleport counterspellkick execute bloodshard berserk isolation rejuvenation clotting phantome summon_bloodrift surge !DEFAULT_ABILITIES{} ] stats: { dexterity: 5 strength: 4 wisdom: 1 constitution: 6 spirit: 7 } resource health: { add_max: 70 } resource mana: { add_max: 1 } add_unarmed_weapon_damage: [ 2 4 ] }		
-		{ level: 2 unlock_abilities: [  ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }		
-		{ level: 3 unlock_abilities: [  ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
-		{ level: 4 unlock_abilities: [  ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }						
-		{ level: 5 unlock_abilities: [  ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
-		{ level: 6 unlock_abilities: [  ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
-		{ level: 7 unlock_abilities: [  ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
-		{ level: 8 unlock_abilities: [  ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
-		{ level: 9 unlock_abilities: [  ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
-		{ level: 10 unlock_abilities: [ ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
+		{ level: 1 unlock_abilities: [ lich_attack lich_shoot lifestrike !DEFAULT_ABILITIES{} ] stats: { dexterity: 5 strength: 4 wisdom: 1 constitution: 6 spirit: 7 } resource health: { add_max: 70 } resource mana: { add_max: 1 } add_unarmed_weapon_damage: [ 2 4 ] }		
+		{ level: 2 unlock_abilities: [ frenzying ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }		
+		{ level: 3 unlock_abilities: [ kickstart ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
+		{ level: 4 unlock_abilities: [ berserk ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }						
+		{ level: 5 unlock_abilities: [ blursing ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
+		{ level: 6 unlock_abilities: [ bloodblink ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
+		{ level: 7 unlock_abilities: [ blood_crush ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
+		{ level: 8 unlock_abilities: [ blood_block ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
+		{ level: 9 unlock_abilities: [ isolation ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
+		{ level: 10 unlock_abilities: [ rejuvenation ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
 		{ level: 11 unlock_abilities: [ ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
 		{ level: 12 unlock_abilities: [ ] stats: { strength: 1 constitution: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
 		{ level: 13 unlock_abilities: [ ] stats: { dexterity: 1 constitution: 1 spirit: 1 } resource health: { add_max: !HEALTH_PER_LEVEL{} } }				
