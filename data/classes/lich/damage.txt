@@ -141,6 +141,7 @@ ability frenzying:
 	states: [ default in_combat ]
 	icon: icon_rend
 	delay: 3
+	resource_cost health: 5
 	talent_tree: lich_damage
 
 	direct_effect apply_aura:
@@ -203,6 +204,7 @@ ability berserk:
 	states: [ default in_combat ]
 	icon: icon_fortify
 	delay: 3
+	resource_cost health: 10
 	talent_tree: lich_damage
 	
 	direct_effect apply_aura:
@@ -370,13 +372,13 @@ ability execute:
 	icon: icon_mortal_strike
 	delay: 3
 	talent_tree: lich_damage
-	resource_cost health: 100
+	resource_cost health: 600
 	
 	direct_effect damage:
 	{
 		flags: [ can_be_critical]
 		damage_type: physical
-		function: { expression: a_mul_x_plus_b x: weapon_normalized a: 5 b: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }
+		function: { expression: a_mul_x_plus_b x: weapon_normalized a: 6 b: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }
 	}
 }
 
@@ -413,7 +415,7 @@ ability bloodshard:
 	speed: 9
 	cast_time: 9
 	projectile: bloodshard
-	resource_cost health: 50
+	resource_cost health: 30
 	
 	direct_effect damage:
 	{
