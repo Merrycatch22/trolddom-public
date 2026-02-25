@@ -234,7 +234,7 @@ aura counterspellkick:
 talent lich_counter_counterspellkick:
 {
 	string: "Counterspellkick"
-	icon: icon_block
+	icon: icon_kick_2
 	prerequisites: [ lich_counter_improved_blood_crush ]	
 	talent_tree_points_required: 5
 	points:
@@ -490,7 +490,7 @@ talent lich_counter_regeneration:
 ability lich_counter_regeneration:
 {
 	string: "regeneration"
-	description: "Heals target over time"
+	description: "Heals target over time by 0.1 attack power per 5 seconds."
 	range: 6
 	cooldowns: [ global ]
 	flags: [ spell target_other target_self target_friendly ]
