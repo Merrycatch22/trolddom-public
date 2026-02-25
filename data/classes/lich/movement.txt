@@ -17,23 +17,26 @@ talent_tree lich_movement:
 		talent lich_movement_hyper_surge: "F"
 		talent lich_movement_phantome: "G"
 		talent lich_movement_reduced_surge_sacrifice: "H"
+		talent lich_movement_blood_teleport: "I"
+		talent lich_movement_rapid_blood_teleport: "K"
+		talent lich_movement_reduced_blood_teleport_sacrifice: "J"
 		sprite talent_tree_down_arrow: "d"
 		sprite talent_tree_down: "|"
 		sprite talent_tree_right_arrow: "-"
-		sprite talent_tree_right_arrow: "l"
+		sprite talent_tree_left_arrow: "l"
 	}
 
 	map:
 	[
-		"B.Z...A"
-		"......."
-		"ElC-D.Y"
-		"..|.d.."
-		"..|.H.."
-		"..|...."
-		"..|...G"
-		"..d...."
-		"..F...."
+		"B.Z.....A"
+		"........."
+		"DlC-E...Y"
+		"d...|...."
+		"H...|.I-K"
+		"....|.d.."
+		"G...|.J.."
+		"....d...."
+		"....F...."
 	]
 }
 
@@ -138,7 +141,7 @@ ability_modifier lich_movement_reduced_bloodblink_sacrifice:
 talent lich_movement_reduced_surge_sacrifice:
 {
 	string: "reduced_surge_sacrifice"
-	icon: icon_pony
+	icon: icon_swiftstrike
 	prerequisites: [ lich_movement_rapid_surge ]
 	talent_tree_points_required: 10
 	
@@ -151,6 +154,27 @@ talent lich_movement_reduced_surge_sacrifice:
 ability_modifier lich_movement_reduced_surge_sacrifice:
 {	
 	description: "Reduces blood cost of surge by 5%."	
+}
+
+###############################################################################
+# reduced_blood_teleport_sacrifice
+
+talent lich_movement_reduced_blood_teleport_sacrifice:
+{
+	string: "reduced_blood_teleport_sacrifice"
+	icon: icon_vindicate
+	prerequisites: [ lich_movement_rapid_blood_teleport ]
+	talent_tree_points_required: 15
+	
+	points:
+	[
+		{ ability_modifier: lich_movement_reduced_blood_teleport_sacrifice }
+	]		
+}
+
+ability_modifier lich_movement_reduced_blood_teleport_sacrifice:
+{	
+	description: "Reduces blood cost of blood_teleport by 5%."	
 }
 
 ###############################################################################
@@ -294,7 +318,7 @@ aura surge_basic:
 	string: "Surge"
 	description: "Movement speed increased."
 	type: buff
-	duration: 40
+	duration: 30
 	flags: [ unique magic ]	
 	icon: icon_mage_swiftness
 	aura_effect move_speed_modifier:
@@ -308,7 +332,7 @@ aura surge_increase:
 	string: "Surge"
 	description: "Movement speed increased."
 	type: buff
-	duration: 60
+	duration: 50
 	flags: [ unique magic ]	
 	icon: icon_mage_swiftness
 	aura_effect move_speed_modifier:
@@ -322,7 +346,7 @@ aura surge_hyper:
 	string: "Hyper Surge"
 	description: "Movement speed increased to mount speed."
 	type: buff
-	duration: 60
+	duration: 50
 	flags: [ unique magic ]	
 	icon: icon_mage_swiftness
 	aura_effect move_speed_modifier:
@@ -343,7 +367,7 @@ ability surge:
 	
 	direct_effect damage:
 	{	
-		# must_not_have_ability_modifiers: [ lich_movement_reduced_surge_sacrifice ] 
+		must_not_have_ability_modifiers: [ lich_movement_reduced_surge_sacrifice ] 
 		damage_type: unholy
 		flags: [ is_magical ]
 		function: { expression: a_mul_x x: health_max a: 0.25 }					
@@ -373,7 +397,6 @@ ability surge:
 	direct_effect apply_aura:
 	{	
 		must_have_ability_modifier: lich_movement_hyper_surge
-		must_not_have_ability_modifiers: [ lich_movement_hyper_surge ]
 		aura: surge_hyper
 	}
 }
@@ -429,12 +452,66 @@ ability_modifier lich_movement_rapid_surge_5:
 	ability:  surge 
 }
 
+#######
+# Rapid blood_teleport
+
+talent lich_movement_rapid_blood_teleport:{
+	string: "Rapid blood_teleport"
+	icon: icon_swift_justice
+	prerequisites: [ lich_movement_blood_teleport ]
+	talent_tree_points_required: 10
+
+	points:
+	[
+		{ ability_modifier: lich_movement_rapid_blood_teleport_1 }
+		{ ability_modifier: lich_movement_rapid_blood_teleport_2 }
+		{ ability_modifier: lich_movement_rapid_blood_teleport_3 }
+		{ ability_modifier: lich_movement_rapid_blood_teleport_4 }
+		{ ability_modifier: lich_movement_rapid_blood_teleport_5 }
+	]
+
+}
+
+ability_modifier lich_movement_rapid_blood_teleport_1:
+{
+	description: "Reduces the cooldown of blood_teleport by 1s."
+	modify_cooldown: -10
+	ability: blood_teleport 
+}
+
+ability_modifier lich_movement_rapid_blood_teleport_2:
+{
+	description: "Reduces the casting time of blood_teleport by 2s."
+	modify_cooldown: -20
+	ability:  blood_teleport 
+}
+ability_modifier lich_movement_rapid_blood_teleport_3:
+{
+	description: "Reduces the casting time of blood_teleport by 3s."
+	modify_cooldown: -30
+	ability:  blood_teleport 
+}
+ability_modifier lich_movement_rapid_blood_teleport_4:
+{
+	description: "Reduces the casting time of blood_teleport by 4s."
+	modify_cooldown: -40
+	ability:  blood_teleport 
+}
+ability_modifier lich_movement_rapid_blood_teleport_5:
+{
+	description: "Reduces the casting time of blood_teleport by 5s."
+	modify_cooldown: -50
+	ability:  blood_teleport 
+}
+
+
+
 ###
 # Increased Surge
 
 talent lich_movement_increased_surge:{
 	string: "Increased Surge"
-	icon: icon_swiftstrike
+	icon: icon_pony
 	prerequisites: [ lich_movement_surge ]
 	talent_tree_points_required: 5
 
@@ -450,13 +527,13 @@ ability_modifier lich_movement_increased_surge:
 }
 
 ###
-# Hyper Surge # change pts
+# Hyper Surge
 
 talent lich_movement_hyper_surge:{
-	string: "Increased Surge"
-	icon: icon_vindicate
-	talent_tree_points_required: 15 # change
-	prerequisites: [lich_movement_surge ]
+	string: "Hyper Surge"
+	icon: icon_dark_wolf
+	talent_tree_points_required: 20
+	prerequisites: [lich_movement_increased_surge ]
 	points:
 	[
 		{ ability_modifier: lich_movement_hyper_surge }
@@ -474,7 +551,7 @@ ability_modifier lich_movement_hyper_surge:
 
 cooldown blood_teleport:
 {
-	duration: 40
+	duration: 200
 }
 
 talent lich_movement_blood_teleport:{
@@ -491,7 +568,7 @@ ability blood_teleport:
 {
 	string: "Blood Teleport"
 	description: "Converts health to movement."
-	range: 8
+	range: 10
 	cooldowns: [ global spell_unholy_lockout blood_teleport ]
 	flags: [ spell target_aoe target_aoe_always_self interruptable late_cooldown_trigger ]
 	states: [ default in_combat ]	
@@ -506,10 +583,17 @@ ability blood_teleport:
 	direct_effect damage:
 	{	
 		damage_type: unholy
+		must_not_have_ability_modifiers: [ lich_movement_reduced_blood_teleport_sacrifice ]
 		flags: [ is_magical ]
 		function: { expression: a_mul_x x: health_max a: 0.3 }					
-	}	
-	
+	}
+	direct_effect damage:
+	{	
+		damage_type: unholy
+		must_have_ability_modifier: lich_movement_reduced_blood_teleport_sacrifice
+		flags: [ is_magical ]
+		function: { expression: a_mul_x x: health_max a: 0.25 }					
+	}		
 	direct_effect move:
 	{			
 		destination: aoe_center
