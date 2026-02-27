@@ -446,6 +446,7 @@ talent lich_counter_improved_blursing:
 {
 	string: "Improved blursing"
 	icon: icon_holy_blessing
+	talent_tree_points_required: 5
 	points:
 	[
 		{ ability_modifier: improved_blursing_1 }
@@ -700,7 +701,7 @@ talent lich_counter_cauterization:
 {
 	string: "cauterization"
 	icon: icon_sanctified_might
-	talent_tree_points_required: 0
+	talent_tree_points_required: 10
 	points:
 	[
 		{ aura: lich_counter_cauterization_1 }

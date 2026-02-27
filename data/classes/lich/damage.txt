@@ -64,7 +64,7 @@ particle_system lifestrike:
 ability lifestrike:
 {
 	string: "Lifestrike"
-	description: "A powerful attack that inflicts $damage$ damage on target."
+	description: "An attack that inflicts $damage$ damage on target and drains life at 50% HP"
 	range: 1	
 	cooldowns: [ global ]
 	flags: [ melee offensive target_other target_hostile can_be_dodged can_be_parried can_be_blocked can_miss ]
@@ -78,7 +78,7 @@ ability lifestrike:
 	{
 		flags: [ can_be_critical leech]
 		damage_type: physical
-		function: { expression: x_plus_a x: weapon_normalized a: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }
+		function: { expression: a_mul_x_plus_b x: weapon_normalized a: 0.5 b: [ [ 1 4 ] [ 10 8 ] [ 20 16 ] [ 30 26 ] ] }
 	}
 }
 
